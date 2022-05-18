@@ -5,11 +5,13 @@
  */
 
 import { noop } from 'lodash';
+import type { SandBox } from '../../interfaces';
 
 const rawWindowInterval = window.setInterval;
 const rawWindowClearInterval = window.clearInterval;
 
-export default function patch(global: Window) {
+export default function patch(_sandbox: SandBox) {
+  const global = _sandbox.proxy;
   let intervals: number[] = [];
 
   global.clearInterval = (intervalId: number) => {

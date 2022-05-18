@@ -29,6 +29,7 @@ export { getCurrentRunningApp } from './common';
  * @param useLooseSandbox
  * @param excludeAssetFilter
  * @param globalContext
+ * @param keepAlive
  */
 export function createSandboxContainer(
   appName: string,
@@ -37,12 +38,15 @@ export function createSandboxContainer(
   useLooseSandbox?: boolean,
   excludeAssetFilter?: (url: string) => boolean,
   globalContext?: typeof window,
+  keepAlive?: boolean,
 ) {
   let sandbox: SandBox;
   if (window.Proxy) {
-    sandbox = useLooseSandbox ? new LegacySandbox(appName, globalContext) : new ProxySandbox(appName, globalContext);
+    sandbox = useLooseSandbox
+      ? new LegacySandbox(appName, globalContext, keepAlive)
+      : new ProxySandbox(appName, globalContext, keepAlive);
   } else {
-    sandbox = new SnapshotSandbox(appName);
+    sandbox = new SnapshotSandbox(appName, keepAlive);
   }
 
   // some side effect could be be invoked while bootstrapping, such as dynamic stylesheet injection with style-loader, especially during the development phase

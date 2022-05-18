@@ -154,9 +154,15 @@ export default class ProxySandbox implements SandBox {
 
   globalContext: typeof window;
 
+  // keepAlive
+  keepAlive: boolean;
+
   sandboxRunning = true;
 
   latestSetProp: PropertyKey | null = null;
+
+  // 沙盒激活的次数
+  activeCount = 0;
 
   private registerRunningApp(name: string, proxy: Window) {
     if (this.sandboxRunning) {
@@ -176,6 +182,7 @@ export default class ProxySandbox implements SandBox {
   active() {
     if (!this.sandboxRunning) activeSandboxCount++;
     this.sandboxRunning = true;
+    this.activeCount++;
   }
 
   inactive() {
@@ -197,9 +204,10 @@ export default class ProxySandbox implements SandBox {
     this.sandboxRunning = false;
   }
 
-  constructor(name: string, globalContext = window) {
+  constructor(name: string, globalContext = window, keepAlive = false) {
     this.name = name;
     this.globalContext = globalContext;
+    this.keepAlive = keepAlive;
     this.type = SandBoxType.Proxy;
     const { updatedValueSet } = this;
 

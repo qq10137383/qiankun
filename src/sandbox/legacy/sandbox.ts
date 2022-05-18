@@ -31,11 +31,17 @@ export default class LegacySandbox implements SandBox {
 
   globalContext: typeof window;
 
+  // keepAlive
+  keepAlive: boolean;
+
   type: SandBoxType;
 
   sandboxRunning = true;
 
   latestSetProp: PropertyKey | null = null;
+
+  // 沙盒激活的次数
+  activeCount = 0;
 
   private setWindowProp(prop: PropertyKey, value: any, toDelete?: boolean) {
     if (value === undefined && toDelete) {
@@ -54,6 +60,7 @@ export default class LegacySandbox implements SandBox {
     }
 
     this.sandboxRunning = true;
+    this.activeCount++;
   }
 
   inactive() {
@@ -72,9 +79,10 @@ export default class LegacySandbox implements SandBox {
     this.sandboxRunning = false;
   }
 
-  constructor(name: string, globalContext = window) {
+  constructor(name: string, globalContext = window, keepAlive = false) {
     this.name = name;
     this.globalContext = globalContext;
+    this.keepAlive = keepAlive;
     this.type = SandBoxType.LegacyProxy;
     const { addedPropsMapInSandbox, modifiedPropsOriginalValueMapInSandbox, currentUpdatedPropsValueMap } = this;
 

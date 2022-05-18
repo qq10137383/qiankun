@@ -4,8 +4,10 @@
  */
 
 import { isFunction, noop } from 'lodash';
+import type { SandBox } from '../../interfaces';
 
-export default function patch() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function patch(_sandbox: SandBox) {
   // FIXME umi unmount feature request
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let rawHistoryListen = (_: any) => noop;

@@ -151,8 +151,9 @@ type ElementRender = (
  * @param appInstanceId
  * @param appContent
  * @param legacyRender
+ * @param keepAlive
  */
-function getRender(appInstanceId: string, appContent: string, legacyRender?: HTMLContentRender) {
+function getRender(appInstanceId: string, appContent: string, legacyRender?: HTMLContentRender, keepAlive?: boolean) {
   const render: ElementRender = ({ element, loading, container }, phase) => {
     if (legacyRender) {
       if (process.env.NODE_ENV === 'development') {
@@ -183,6 +184,17 @@ function getRender(appInstanceId: string, appContent: string, legacyRender?: HTM
         }
       })();
       assertElementExist(containerElement, errorMsg);
+    }
+
+    // 配置增加keepAlive参数，设为true时应用卸载将不会销毁挂载容器，只是隐藏(display:none)
+    if (keepAlive && containerElement) {
+      if (!element) {
+        containerElement.style.display = 'none';
+        return;
+      }
+      if (containerElement.firstChild) {
+        containerElement.style.display = 'block';
+      }
     }
 
     if (containerElement && !containerElement.contains(element)) {
@@ -257,6 +269,7 @@ export async function loadApp<T extends ObjectType>(
   const {
     singular = false,
     sandbox = true,
+    keepAlive = false,
     excludeAssetFilter,
     globalContext = window,
     ...importEntryOpts
@@ -293,7 +306,7 @@ export async function loadApp<T extends ObjectType>(
   const initialContainer = 'container' in app ? app.container : undefined;
   const legacyRender = 'render' in app ? app.render : undefined;
 
-  const render = getRender(appInstanceId, appContent, legacyRender);
+  const render = getRender(appInstanceId, appContent, legacyRender, keepAlive);
 
   // 第一次加载设置应用可见区域 dom 结构
   // 确保每次应用加载前容器 dom 结构已经设置完毕
@@ -321,6 +334,8 @@ export async function loadApp<T extends ObjectType>(
       useLooseSandbox,
       excludeAssetFilter,
       global,
+      // 沙盒keepAlive模式
+      keepAlive,
     );
     // 用沙箱的代理对象作为接下来使用的全局对象
     global = sandboxContainer.instance.proxy as typeof window;
@@ -428,9 +443,11 @@ export async function loadApp<T extends ObjectType>(
         async () => {
           render({ element: null, loading: false, container: remountContainer }, 'unmounted');
           offGlobalStateChange(appInstanceId);
-          // for gc
-          appWrapperElement = null;
-          syncAppWrapperElement2Sandbox(appWrapperElement);
+          // for gc (keepAlive模式下不销毁挂载容器)
+          if (!keepAlive) {
+            appWrapperElement = null;
+            syncAppWrapperElement2Sandbox(appWrapperElement);
+          }
         },
         async () => {
           if ((await validateSingularMode(singular, app)) && prevAppUnmountedDeferred) {

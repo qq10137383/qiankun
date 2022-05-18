@@ -19,9 +19,9 @@ export function patchAtMounting(
   excludeAssetFilter?: CallableFunction,
 ): Freer[] {
   const basePatchers = [
-    () => patchInterval(sandbox.proxy),
-    () => patchWindowListener(sandbox.proxy),
-    () => patchHistoryListener(),
+    () => patchInterval(sandbox),
+    () => patchWindowListener(sandbox),
+    () => patchHistoryListener(sandbox),
   ];
 
   const patchersInSandbox = {

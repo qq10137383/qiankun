@@ -66,6 +66,7 @@ type QiankunSpecialOpts = {
    */
   $$cacheLifecycleByAppName?: boolean;
   prefetch?: PrefetchStrategy;
+  keepAlive?: boolean; // 卸载应用时是否缓存
   sandbox?:
     | boolean
     | {
@@ -118,6 +119,8 @@ export enum SandBoxType {
 export type SandBox = {
   /** 沙箱的名字 */
   name: string;
+  /** 是否启用keepAlive */
+  keepAlive: boolean;
   /** 沙箱的类型 */
   type: SandBoxType;
   /** 沙箱导出的代理实体 */
@@ -126,6 +129,8 @@ export type SandBox = {
   sandboxRunning: boolean;
   /** latest set property */
   latestSetProp?: PropertyKey | null;
+  /** 沙盒激活次数 */
+  activeCount: number;
   /** 启动沙箱 */
   active: () => void;
   /** 关闭沙箱 */

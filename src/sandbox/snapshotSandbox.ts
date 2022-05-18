@@ -25,14 +25,20 @@ export default class SnapshotSandbox implements SandBox {
 
   type: SandBoxType;
 
+  keepAlive: boolean;
+
   sandboxRunning = true;
 
   private windowSnapshot!: Window;
 
   private modifyPropsMap: Record<any, any> = {};
 
-  constructor(name: string) {
+  // 沙盒激活的次数
+  activeCount = 0;
+
+  constructor(name: string, keepAlive = false) {
     this.name = name;
+    this.keepAlive = keepAlive;
     this.proxy = window;
     this.type = SandBoxType.Snapshot;
   }
@@ -50,6 +56,7 @@ export default class SnapshotSandbox implements SandBox {
     });
 
     this.sandboxRunning = true;
+    this.activeCount++;
   }
 
   inactive() {
