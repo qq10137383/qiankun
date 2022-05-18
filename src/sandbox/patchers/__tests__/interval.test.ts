@@ -5,9 +5,11 @@
 
 import { sleep } from '../../../utils';
 import patch from '../interval';
+import ProxySandbox from '../../proxySandbox';
 
 test('patch setInterval', async () => {
-  const free = patch(window);
+  const sandbox = new ProxySandbox('test', window, false);
+  const free = patch(sandbox);
 
   const clearedListener = jest.fn();
   const unclearedListener = jest.fn();
