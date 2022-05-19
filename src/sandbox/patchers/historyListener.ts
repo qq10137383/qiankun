@@ -32,6 +32,10 @@ export default function patch(_sandbox: SandBox) {
   }
 
   return function free() {
+    if (_sandbox.keepAlive) {
+      return noop;
+    }
+
     let rebuild = noop;
 
     /*

@@ -10,6 +10,7 @@ import { patchLooseSandbox, patchStrictSandbox } from './dynamicAppend';
 import patchHistoryListener from './historyListener';
 import patchInterval from './interval';
 import patchWindowListener from './windowListener';
+import { noop } from 'lodash';
 
 export function patchAtMounting(
   appName: string,
@@ -22,7 +23,13 @@ export function patchAtMounting(
     () => patchInterval(sandbox),
     () => patchWindowListener(sandbox),
     () => patchHistoryListener(sandbox),
-  ];
+  ].map((patch) => () => {
+    // 启用keepAlive模式时，不需要重新patch
+    if (!sandbox.keepAlive || sandbox.activeCount === 1) {
+      return patch();
+    }
+    return () => noop;
+  });
 
   const patchersInSandbox = {
     [SandBoxType.LegacyProxy]: [

@@ -26,10 +26,11 @@ export default function patch(_sandbox: SandBox) {
   };
 
   return function free() {
-    intervals.forEach((id) => global.clearInterval(id));
-    global.setInterval = rawWindowInterval;
-    global.clearInterval = rawWindowClearInterval;
-
+    if (!_sandbox.keepAlive) {
+      intervals.forEach((id) => global.clearInterval(id));
+      global.setInterval = rawWindowInterval;
+      global.clearInterval = rawWindowClearInterval;
+    }
     return noop;
   };
 }
