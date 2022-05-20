@@ -28,4 +28,9 @@ start({
 });
 ```
 
+## release
+
+- v1.0.0  
+  base on qiankun 2.7.0，add keepAlive options
+
 refer to [qiankun](https://github.com/umijs/qiankun) for more options

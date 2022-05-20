@@ -1,6 +1,6 @@
 {
   "name": "qiankun-dhcc",
-  "version": "2.7.0",
+  "version": "1.0.0",
   "description": "based on qiankun framework，add customized functions",
   "keywords": [
     "micro frontend",
